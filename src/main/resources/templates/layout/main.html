@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=ВАШ_API_КЛЮЧ&lang=ru_RU" type="text/javascript"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <style>
+        #modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vw; /* Используйте ширину вьюпорта */
+            max-width: 400px;
+            height: 80vh; /* Используйте высоту вьюпорта */
+            max-height: 400px;
+            background-color: rgba(0, 0, 0, 1);
+            z-index: 1000;
+        }
+
+        #modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            z-index: 1000;
+            overflow: auto; /* Добавлено для возможности прокрутки содержимого модального окна */
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        .navbar {
+            margin-top: 0;
+        }
+        .dropdown-menu {
+            max-height: 200px; /* Задайте максимальную высоту по вашему усмотрению */
+            overflow-y: auto;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+                <div class="container-fluid ">
+                    <a class="navbar-brand mb-0 h1" href="/market/home">Pro</a>
+                    <form class="d-flex" role="search" th:action="@{'/market/item-search'}" method="get">
+                        <input class="form-control me-2" type="text" placeholder="Search for restaurants, food or shops"
+                               aria-label="Search"
+                               name="search">
+                        <button class="btn btn-warning" type="submit"><i class="fas fa-search"></i></button>
+                    </form>
+                    <button id="show-modal" class="btn btn-warning">Укажите адрес доставки</button>
+
+                    <div id="modal">
+                        <div id="modal-content">
+                            <button type="button" class="btn-close" aria-label="Закрыть" onclick="closeModal()">
+                            </button>
+                            <div id="map"></div>
+                        </div>
+                    </div>
+                 <div class="col-md-2"></div>
+
+                    <!-- Иконка Instagram -->
+                    <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://t.me/" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-tiktok"></i>
+                    </a>
+
+
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"
+                                aria-expanded="false"  th:text="${#authentication.principal.name}">
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <button class="btn dropdown-item btn-outline-info" data-bs-toggle="modal"
+                                        data-bs-target="#modalOne"  sec:authorize="hasAnyRole('ROLE_ADMIN')">Add
+                                </button>
+                            </li>
+                            <li><a class="btn dropdown-item btn-outline-info " role="button"
+                                   th:href="@{'/market/basket/'+${#authentication.principal.id}}">Basket</a></li>
+                            <li><a class="btn dropdown-item btn-outline-info " role="button"
+                                   th:href="@{'/market/profile/'+${#authentication.principal.id}}">Profile</a></li>
+                            <li>
+                                <button type="button" class="btn dropdown-item btn-outline-info" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModal">
+                                    My information
+                                </button>
+                            </li>
+                            <li><a class="btn dropdown-item btn-outline-info " role="button"
+                                   th:href="@{'/market/admin-panel'}" sec:authorize="hasAnyRole('ROLE_ADMIN')">Admin-Panel</a></li>
+                            <li><a class="btn dropdown-item btn-outline-info " role="button"
+                                   th:href="@{'/market/change-password'}">Change Password</a></li>
+                            <li>
+                                <form th:action="@{'/logout'}" method="post">
+                                    <button class="btn dropdown-item btn-outline-info">Log Out</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+
+
+                </div>
+
+        </nav>
+</div>
+
+
+<div layout:fragment="homeFragment"></div>
+<div layout:fragment="basketFragment"></div>
+<div layout:fragment="adminFragment"></div>
+<div layout:fragment="detailsFragment"></div>
+<div layout:fragment="shopsFragment"></div>
+<div layout:fragment="profileFragment"></div>
+<script>
+    ymaps.ready(init);
+
+    function init() {
+        var myMap = new ymaps.Map("map", {
+            center: [55.755814, 37.617635],
+            zoom: 15
+        });
+
+        var myPlacemark = new ymaps.Placemark([55.755814, 37.617635], {
+            hintContent: 'Ваше местоположение',
+            balloonContent: 'Выберите ваше местоположение'
+        }, {
+            draggable: true
+        });
+
+        myMap.geoObjects.add(myPlacemark);
+    }
+
+    function showModal() {
+        document.getElementById("modal").style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById("modal").style.display = "none";
+    }
+
+    document.getElementById("show-modal").addEventListener("click", showModal);
+</script>
+
+<script>
+    function scrollCards(direction) {
+        var container = document.getElementById('cardContainer');
+        container.scrollBy({
+            left: direction * (container.offsetWidth / 2), // Прокрутка на половину контейнера
+            behavior: 'smooth'
+        });
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+</body>
+</html>

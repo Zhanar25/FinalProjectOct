@@ -1,0 +1,45 @@
+
+<html  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+       layout:decorate="~{layout/main}">
+<div class="container" layout:fragment="commentFragment">
+  <div class="row">
+    <!-- Card-->
+    <div class="col-md-4" th:each="item:${items}">
+      <div class="card">
+
+        <div class="card-body">
+          <br>
+
+          <h5 class="card-title text-sm" th:text="${item.getName()}"></h5>
+
+          <h5 class="card-text" th:text="${item.getPrice()}+' ₸'"></h5>
+          <div class="row" th:each="category:${item.getCategories()}">
+            <div class="col-md-8">
+              <h4 class="card-text text-sm" th:text="${category.getName()}"
+              ></h4>
+            </div>
+            <div class="col-md-4">
+              <form th:action="@{'/market/delete-category'}" method="post">
+                <input type="hidden" name="item-id" th:value="${item.getId()}">
+                <input type="hidden" name="category-id" th:value="${category.getId()}">
+                <button class="btn btn-danger" >-</button>
+              </form>
+            </div>
+
+          </div>
+          <div>
+            <a class="btn btn-info" th:href="@{'/market/details/'+${item.getId()}}">Details</a>
+          </div>
+          <div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    th:attr="data-bs-target='#staticBackdrop'+${item.getId()}">details
+            </button>
+          </div>
+        </div>
+      </div>
+      <br>
+    </div>
+
+  </div>
+</div>
+</html>

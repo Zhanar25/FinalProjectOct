@@ -1,0 +1,59 @@
+
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<title>Profile</title>
+<div class="container" layout:fragment="profileFragment">
+    <div class="row">
+
+        <h3 th:text="${#authentication.principal.name}"></h3>
+        <h3 th:text="${#authentication.principal.email}"></h3>
+        <div th:each="photo : ${currentUser.getPhotos()}">
+            <img th:src="@{'/' + ${photo.name}}" style="height: 40px; width: 40px">
+        </div>
+        <a><h3>Preferences</h3></a>
+        <a><h3>Private</h3></a>
+        <a><h3>Appearance</h3></a>
+        <a th:href="@{'/market/change-password'}" ><h3>Change Password</h3></a>
+        <a th:href="@{'/market/admin-panel'}" ><h3>Admin-Panel</h3></a>
+        <form th:action="@{'/market/upload-photo'}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="hidden" th:value="${#authentication.principal.email}" name="email">
+                <label class="form-label">Photo:</label>
+                <input type="file" class="form-control" name="photo">
+                <button class="btn btn-warning">Add photo</button>
+            </div>
+
+        </form>
+
+    </div>
+    <div class="row">
+        <form th:action="@{'/logout'}" method="post">
+            <button class="btn btn-danger">Log Out</button>
+        </form>
+    </div>
+  <form th:action="@{'/market/updateUsersItem'}" method="post">
+      <div th:if="${not #lists.isEmpty(userItems)}">
+          <h2>Your Cart</h2>
+          <div th:each="userItem : ${userItems}">
+              <div>
+                  <h4 th:text="${userItem.item.name}"></h4>
+                  <p>Price: $<span th:text="${userItem.item.price}"></span></p>
+                  <form th:action="@{'/updateCartItem'}" method="post">
+                      <input type="hidden" name="userId" th:value="${#authentication.principal.id}">
+                      <input type="hidden" name="itemId" th:value="${userItem.item.id}">
+
+                      <input type="number" name="quantity" th:value="${userItem.quantity}" min="1">
+                      <button type="submit">Update Quantity</button>
+                  </form>
+              </div>
+              <hr>
+          </div>
+      </div>
+  </form>
+    <div th:else>
+        <p>Your cart is empty.</p>
+    </div>
+</div>
+
+</html>

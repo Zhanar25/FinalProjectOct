@@ -1,0 +1,106 @@
+
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/main.html">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+    }
+
+    .center-container-2 {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+    }
+
+    .card-2 {
+        max-width: 400px;
+        width: 100%;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: white;
+
+    }
+    h2{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    form {
+        margin: 0;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    input {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 16px;
+        box-sizing: border-box;
+    }
+
+</style>
+<body>
+<div class="container" layout:fragment="detailsFragment">
+    <div class="center-container-2">
+    <div class="card-2">
+        <form th:action="@{'/market/update-item'}" method="post">
+            <input type="hidden" name="id" th:value="${item.getId()}">
+            <div class="form-group">
+                <label class="form-label">Item-Name:</label>
+                <input type="text" class="form-control" name="name" th:value="${item.getName()}">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Item-Amount:</label>
+                <input type="number" class="form-control" name="amount" th:value="${item.getPrice()}">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Item-Price:</label>
+                <input type="number" class="form-control" name="price" th:value="${item.getAmount()}">
+            </div>
+            <label class="form-label">Choose Category:</label>
+            <div class="form-group">
+                <select class="form-control" name="category-id" >
+                    <option th:each="category:${categories}" th:text="${category.getName()}" th:value="${category.getId()}"></option>
+                </select>
+            </div>
+            <label class="form-label">Choose Company:</label>
+            <div class="form-group">
+                <select class="form-control" name="company-id" >
+                    <option th:each="company:${companies}" th:text="${company.getName()}" th:value="${company.getId()}"></option>
+                </select>
+            </div>
+            <label class="form-label">Choose Ingredients:</label>
+            <div class="form-check" th:each="ingredient:${ingredients}">
+                <input class="form-check-input" type="checkbox"  id="flexCheckDefault2" th:value="${ingredient.getId()}" name="ingredient-id">
+                <label class="form-check-label" for="flexCheckDefault2" th:text="${ingredient.getName()}"></label>
+            </div>
+
+            <div class="form-group">
+                <button class="btn btn-success">Update Item</button>
+            </div>
+
+        </form>
+        <form th:action="@{'/market/delete'}" method="post">
+            <input type="hidden" th:value="${item.getId()}" name="item-id">
+            <button class="btn btn-danger">Delete </button>
+
+        </form>
+
+    </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+
+
+
+

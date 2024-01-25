@@ -1,0 +1,41 @@
+<html  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout/main}"
+       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div class="container" layout:fragment="shopsFragment">
+    <div class="row">
+
+        <div class="col-md-3" th:each="item : ${items}">
+            <input type="hidden" name="id" th:value="${item.getId()}">
+            <div class="card">
+                <div class="card-body">
+                    <img src="https://chefrestoran.ru/wp-content/uploads/2018/10/604655519.jpg" style="   width: 30vh; height: 20vh; ">
+                    <h5 class="card-title text-sm" th:text="${item.getName()}"></h5>
+                    <div class="card-text" th:text="${item.amount}"></div>
+                    <div class="row" th:each="category:${item.getCategories()}">
+                        <div class="card-text" th:text="${category.getName()}"></div>
+                    </div>
+                    <div class="row" th:each="company:${item.getCompanies()}">
+                        <h4 class="card-text text-sm" th:text="${company.getName()}"></h4>
+                        <h5 class="card-text" th:text="${item.getPrice()}+' ₸'"></h5>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a class="btn btn-info" sec:authorize="${hasAnyRole('ROLE_ADMIN')}"  th:href="@{'/market/details/'+${item.getId()}}">Details</a>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="col-md-6">
+                                <form th:action="@{'/market/add-basket-user'}" method="post">
+                                    <input type="hidden" name="item-id" th:value="${item.getId()}">
+                                    <input type="hidden" name="user-id"
+                                           th:value="${#authentication.principal.id}">
+                                    <button class="btn btn-warning">Basket</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</html>

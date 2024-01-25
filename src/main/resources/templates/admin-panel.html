@@ -1,0 +1,35 @@
+
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/main.html">
+
+    <title>Admin-Panel</title>
+    <div class="container" layout:fragment="adminFragment">
+        <div class="row">
+            <!-- Card-->
+
+                <table class="table table-bordered table-hover">
+                    <tr>
+                        <th>id</th>
+                        <th>Email</th>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>Action</th>
+                    </tr>
+                    <tr th:each="user, stat : ${users}">
+                        <td th:text="${stat.index+1}"></td>
+                        <td th:text="${user.getEmail()}"></td>
+                        <td th:text="${user.getName()}"></td>
+                        <td th:text="${user.getSurname()}"></td>
+                        <td>
+                            <form th:action="@{'/market/delete-user'}" method="post">
+                                <input type="hidden" th:value="${user.getId()}" name="user-id">
+                                <button class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+
+        </div>
+    </div>
+
+</div>
+</html>

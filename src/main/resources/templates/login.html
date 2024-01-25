@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Log In</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .center-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .card {
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: white;
+
+        }
+h4{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+        form {
+            margin: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+
+        .btn{
+            background-color: #800080;
+        }
+        .registration-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px; /* Adjust the margin as needed */
+        }
+
+        .registration-link a {
+            color: #800080; /* Set link color to purple */
+        }
+    </style>
+</head>
+<body>
+<div class="container center-container">
+    <div class="card">
+        <h4> Sign in</h4>
+        <form th:action="@{'/sign-in'}" method="post">
+            <div class="form-group">
+                <label class="form-label">Email:</label>
+                <input type="email" class="form-group" name="email-name">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password:</label>
+                <input type="password" class="form-group" name="password-name">
+            </div>
+            <div class="form-group">
+                <button class="btn text-white form-control">Sign in</button>
+            </div>
+            <div class="registration-link">
+            <a th:href="@{'/market/register'}">Registration</a>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+</body>
+</html>
